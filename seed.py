@@ -20,16 +20,25 @@ def minutes_ago(n: int) -> str:
 
 MENU = [
     # name, price_cents, expected_prep_minutes, category
-    ("Tomato Soup", 599, 8, "Starters"),
-    ("Paneer Tikka", 1099, 15, "Starters"),
-    ("Chicken 65", 1199, 15, "Starters"),
-    ("Caesar Salad", 899, 8, "Starters"),
-    ("Margherita Pizza", 1299, 12, "Mains"),
-    ("Chicken Biryani", 1499, 20, "Mains"),
-    ("Veg Fried Rice", 999, 10, "Mains"),
-    ("Masala Dosa", 899, 10, "Mains"),
-    ("Gulab Jamun", 499, 5, "Desserts"),
-    ("Mango Lassi", 399, 5, "Beverages"),
+    # Prices range from $10.00 to $100.00 as set for RKB restaurant.
+    # --- Non-Veg ---
+    ("Chicken Curry", 2500, 20, "Non-Veg"),
+    ("Mutton Curry", 4500, 25, "Non-Veg"),
+    ("Lamb Chops", 6000, 25, "Non-Veg"),
+    ("Fish Fry", 3500, 20, "Non-Veg"),
+    ("Chicken Biryani", 3000, 20, "Biryanis"),
+    ("Mutton Biryani", 4500, 25, "Biryanis"),
+    ("Fish Biryani", 4000, 22, "Biryanis"),
+    ("Ice Cream", 1000, 5, "Desserts"),
+    # --- Veg ---
+    ("Sambar", 1200, 10, "Veg"),
+    ("Rice", 1000, 8, "Veg"),
+    ("Okarn", 1500, 12, "Veg"),
+    ("Dondi Fry", 1800, 12, "Veg"),
+    ("Mondal", 2000, 15, "Veg"),
+    ("Roti", 1000, 5, "Veg"),
+    ("Dal", 1200, 10, "Veg"),
+    ("Tomato Dal", 1400, 10, "Veg"),
 ]
 
 TABLES = [(1, 2), (2, 4), (3, 4), (4, 6), (5, 2), (6, 8)]
@@ -66,7 +75,7 @@ def main() -> None:
         )
 
     # 1. Completed order (full history, realistic timestamps)
-    o1 = order(1, [("Tomato Soup", 1), ("Margherita Pizza", 1)], "Anita Rao", "+15550001001")
+    o1 = order(1, [("Sambar", 1), ("Chicken Biryani", 1)], "Anita Rao", "+15550001001")
     db.set_order_field(o1["id"], "placed_at", minutes_ago(90))
     for status, ago in [("KITCHEN_RECEIVED", 85), ("PREPARING", 80),
                         ("READY", 65), ("SERVED", 60), ("COMPLETED", 30)]:
@@ -78,18 +87,18 @@ def main() -> None:
         advance_order(db, o2["id"], status)
 
     # 3. Ready order waiting for the waiter
-    o3 = order(3, [("Masala Dosa", 2), ("Mango Lassi", 2)], "Priya Nair", "+15550001003")
+    o3 = order(3, [("Roti", 2), ("Ice Cream", 2)], "Priya Nair", "+15550001003")
     for status in ["KITCHEN_RECEIVED", "PREPARING", "READY"]:
         advance_order(db, o3["id"], status)
 
     # 4. Preparing, on time (started 5 minutes ago)
-    o4 = order(4, [("Veg Fried Rice", 1)], "Arjun Mehta", "+15550001004")
+    o4 = order(4, [("Rice", 1)], "Arjun Mehta", "+15550001004")
     for status in ["KITCHEN_RECEIVED", "PREPARING"]:
         advance_order(db, o4["id"], status)
     db.set_order_field(o4["id"], "preparing_started_at", minutes_ago(5))
 
-    # 5. DELAYED order: 35 min in PREPARING, max item prep is 15 min
-    o5 = order(5, [("Paneer Tikka", 1), ("Chicken 65", 1)], "Ramesh Poluri", "+15550001005")
+    # 5. DELAYED order: 35 min in PREPARING, max item prep is 25 min
+    o5 = order(5, [("Mutton Curry", 1), ("Fish Fry", 1)], "Ramesh Poluri", "+15550001005")
     for status in ["KITCHEN_RECEIVED", "PREPARING"]:
         advance_order(db, o5["id"], status)
     db.set_order_field(o5["id"], "preparing_started_at", minutes_ago(35))
@@ -98,14 +107,14 @@ def main() -> None:
     print(f"Seeded delayed order #{o5['id']} with a customer-care notice (response: WAITING).")
 
     # 6. Just received by the kitchen
-    o6 = order(6, [("Caesar Salad", 1), ("Gulab Jamun", 2)], "Sara Khan", "+15550001006")
+    o6 = order(6, [("Dal", 1), ("Ice Cream", 2)], "Sara Khan", "+15550001006")
     advance_order(db, o6["id"], "KITCHEN_RECEIVED")
 
     # 7. Freshly placed
-    o7 = order(1, [("Mango Lassi", 1)], "Dev Patel", "+15550001007")
+    o7 = order(1, [("Tomato Dal", 1)], "Dev Patel", "+15550001007")
 
     # 8. Cancelled order
-    o8 = order(2, [("Tomato Soup", 1)], "Neha Gupta", "+15550001008")
+    o8 = order(2, [("Sambar", 1)], "Neha Gupta", "+15550001008")
     advance_order(db, o8["id"], "CANCELLED")
 
     print("Seeded 8 sample orders across all states.")
