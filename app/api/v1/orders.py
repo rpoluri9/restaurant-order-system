@@ -12,6 +12,7 @@ from ...services.orders import (
     get_order_detail,
     place_order,
 )
+from ...services.billing import calculate_bill
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -64,3 +65,10 @@ def advance(order_id: int, body: AdvanceIn, db: Database = Depends(get_db)):
 @router.post("/{order_id}/cancel")
 def cancel(order_id: int, db: Database = Depends(get_db)):
     return _handle(cancel_order, db, order_id)
+
+
+@router.get("/{order_id}/bill")
+def get_bill(order_id: int, db: Database = Depends(get_db)):
+    """Bill breakdown: subtotal, 25% family discount above $200,
+    GST 10% + state tax 6% + sales tax 4%, and the grand total."""
+    return _handle(calculate_bill, db, order_id)
