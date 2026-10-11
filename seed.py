@@ -39,6 +39,14 @@ MENU = [
     ("Roti", 1000, 5, "Veg"),
     ("Dal", 1200, 10, "Veg"),
     ("Tomato Dal", 1400, 10, "Veg"),
+    # --- Kids Menu ---
+    ("Plain Dosa", 1000, 8, "Kids Menu"),
+    ("Chicken Nuggets", 1200, 10, "Kids Menu"),
+    ("Crispy Dosa", 1200, 10, "Kids Menu"),
+    ("Chocolate Dosa", 1400, 10, "Kids Menu"),
+    ("Puri", 1000, 8, "Kids Menu"),
+    ("Chapathi", 1000, 5, "Kids Menu"),
+    ("Noodles", 1500, 12, "Kids Menu"),
 ]
 
 TABLES = [(1, 2), (2, 4), (3, 4), (4, 6), (5, 2), (6, 8)]
